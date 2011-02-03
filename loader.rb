@@ -1,14 +1,16 @@
 #!/usr/bin/env ruby
 
-# this script goes in your ~/Documents/UCreateMusic dir
-# samples go in ~/Documents/UCreateMusic/Samples/queue by default
+# stock samples are temp saved to ~/Documents/UCreateMusic/Loop
+# your samples go in ~/Documents/UCreateMusic/Samples/queue by default
 # requires `gem install rb-fsevent`
 #
-# just `ruby loader.rb` to start monitoring the
+# just `ruby loader.rb` to start monitoring the Loop dir
+# then go through the dumb flash site and save whatever to the device
+# this script will detect as the stock files are loaded and replace them
 #
 
 STOCK_SAMPLES_DIR = File.expand_path(File.dirname(__FILE__)+'/Loop') # where the flash site will be saving its files
-CUSTOM_SAMPLES_DIR = File.expand_path(File.dirname(__FILE__)+'/Samples/queue') # samples we want to load
+CUSTOM_SAMPLES_DIR = File.expand_path(File.dirname(__FILE__)+'/Samples/queue') # samples we want to load, can be named anything, loads them alphabetically
 
 puts "STOCK_SAMPLES_DIR: #{STOCK_SAMPLES_DIR}"
 puts "CUSTOM_SAMPLES_DIR: #{CUSTOM_SAMPLES_DIR}"
