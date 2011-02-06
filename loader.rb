@@ -22,31 +22,43 @@ require 'rb-fsevent'
 # bahleted!
 Dir.chdir(STOCK_SAMPLES_DIR)
 Dir['*.lop'].each do |stock|
-  puts "deleting #{stock}"
-  File.delete stock unless File.directory? stock
+  unless File.directory? stock
+    puts "deleting: #{stock}"
+    File.delete stock
+  end
 end
 
 Dir.chdir(STOCK_SAMPLES_DIR)
-existing = Dir['*']
+existing = Dir['*.lop']
 Dir.chdir(CUSTOM_SAMPLES_DIR)
-queue = Dir['*.wav']
+queue = Dir['*.*']
 
-fsevent = FSEvent.new
-fsevent.watch STOCK_SAMPLES_DIR do |dirs|
-  dir = dirs.first # only teh first
-  Dir.chdir(dir)
-  new = Dir['*'] - existing
-  puts "new files: #{new.inspect}"
-  new.each do |replace|
-    replacer = queue.shift
-    if replacer && replace
-      puts "replacing #{replace} with #{replacer}"
-      existing << replace
-      FileUtils.cp \
-        CUSTOM_SAMPLES_DIR+"/"+(replacer),
-        STOCK_SAMPLES_DIR+"/"+replace
+if queue.any?
+  puts "queue: #{queue.inspect}"
+  fsevent = FSEvent.new
+  fsevent.watch STOCK_SAMPLES_DIR do |dirs|  
+    dir = dirs.first # only teh first
+    Dir.chdir(dir)
+    news = Dir['*'] - existing
+    puts "new files: #{news.inspect}"
+    news.each do |replace|
+      replacer = queue.shift
+      if replacer && replace
+        puts "replacing #{replace} with #{replacer}"
+        existing << replace
+        FileUtils.cp(
+          CUSTOM_SAMPLES_DIR+"/"+replacer,
+          STOCK_SAMPLES_DIR+"/"+replace
+          )
+      end
+    end
+    if queue.empty?
+      puts "queue empty"
+      fsevent.stop
     end
   end
+  fsevent.run
+else
+  puts "no files in queue"
 end
-fsevent.run
 
